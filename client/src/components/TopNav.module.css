@@ -1,0 +1,93 @@
+.header {
+  position: fixed;
+  top: 16px;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.inner {
+  width: min(1200px, 92vw);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 999px;
+  box-shadow: var(--shadow-md);
+  pointer-events: all;
+  backdrop-filter: blur(8px);
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.brandMark {
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 0.3px;
+  color: var(--accent-600);
+}
+
+.brandSub {
+  font-size: 12px;
+  color: var(--ink-500);
+}
+
+.nav {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.navLink {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 14px;
+  color: var(--ink-700);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.navLink:hover {
+  background: var(--accent-200);
+}
+
+.active {
+  background: var(--accent-600);
+  color: white;
+}
+
+.ctaGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.authLink {
+  font-size: 14px;
+  color: var(--ink-700);
+}
+
+@media (max-width: 900px) {
+  .inner {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    border-radius: 24px;
+  }
+
+  .nav {
+    justify-content: flex-start;
+  }
+
+  .ctaGroup {
+    justify-content: space-between;
+  }
+}

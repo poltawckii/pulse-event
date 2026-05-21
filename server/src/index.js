@@ -1,0 +1,31 @@
+import express from 'express'
+import cors from 'cors'
+import config from './config.js'
+import authRoutes from './routes/auth.js'
+import eventsRoutes from './routes/events.js'
+import favoritesRoutes from './routes/favorites.js'
+import ratingsRoutes from './routes/ratings.js'
+import recommendationsRoutes from './routes/recommendations.js'
+import kudagoRoutes from './routes/kudago.js'
+import geocodeRoutes from './routes/geocode.js'
+
+const app = express()
+
+app.use(cors())
+app.use(express.json())
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' })
+})
+
+app.use('/api/auth', authRoutes)
+app.use('/api/events', eventsRoutes)
+app.use('/api/favorites', favoritesRoutes)
+app.use('/api/ratings', ratingsRoutes)
+app.use('/api/recommendations', recommendationsRoutes)
+app.use('/api/kudago', kudagoRoutes)
+app.use('/api/geocode', geocodeRoutes)
+
+app.listen(config.port, () => {
+  console.log(`API listening on port ${config.port}`)
+})

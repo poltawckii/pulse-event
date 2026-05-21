@@ -1,0 +1,41 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title {
+  margin: 0 0 4px;
+}
+
+.mapCard {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: white;
+  box-shadow: var(--shadow-md);
+  min-height: 320px;
+}
+
+.map {
+  height: 320px;
+  width: 100%;
+}
+
+.yandexNote {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  max-width: 220px;
+  box-shadow: var(--shadow-sm);
+}

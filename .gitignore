@@ -1,0 +1,22 @@
+# Env files (keep examples)
+.env
+.env.*
+!.env.example
+!.env.prod.example
+
+# Node
+node_modules
+
+# Builds
+/dist
+client/dist
+server/dist
+
+# Logs
+logs
+*.log
+
+# Editor
+.vscode/
+.idea/
+.DS_Store

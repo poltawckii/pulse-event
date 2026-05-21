@@ -1,0 +1,21 @@
+.appShell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-image: radial-gradient(circle at 20% 20%, rgba(44, 110, 111, 0.08), transparent 60%),
+    radial-gradient(circle at 80% 10%, rgba(242, 180, 94, 0.15), transparent 45%);
+}
+
+.main {
+  width: min(1200px, 92vw);
+  margin: 110px auto 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .main {
+    margin-top: 92px;
+  }
+}

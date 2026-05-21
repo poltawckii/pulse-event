@@ -1,0 +1,131 @@
+:root {
+  --ink-900: #101417;
+  --ink-700: #2d343a;
+  --ink-500: #54606b;
+  --stone-200: #e7e2d9;
+  --stone-100: #f3f0ea;
+  --sand-50: #fbfaf7;
+  --accent-600: #2c6e6f;
+  --accent-500: #3b8b8c;
+  --accent-200: #bfe1dc;
+  --sun-400: #f2b45e;
+  --error-500: #b23a48;
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --shadow-md: 0 18px 50px rgba(16, 20, 23, 0.16);
+  --shadow-sm: 0 10px 24px rgba(16, 20, 23, 0.12);
+  --font-sans: "Alegreya Sans", "Fira Sans", "Helvetica Neue", sans-serif;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: radial-gradient(circle at top left, #fef8ee 0%, #fbfaf7 38%, #f4efe6 100%);
+  color: var(--ink-900);
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.section {
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--accent-200);
+  color: var(--ink-700);
+  border-radius: 999px;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+}
+
+.grid {
+  display: grid;
+  gap: 18px;
+}
+
+.grid.two {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.grid.three {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.button {
+  border: none;
+  cursor: pointer;
+  background: var(--accent-600);
+  color: white;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button.secondary {
+  background: white;
+  color: var(--accent-600);
+  border: 1px solid var(--accent-200);
+}
+
+.input,
+.select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(16, 20, 23, 0.1);
+  font-size: 14px;
+  background: white;
+}
+
+.muted {
+  color: var(--ink-500);
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 16px;
+  }
+}
