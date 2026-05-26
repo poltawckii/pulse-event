@@ -135,27 +135,8 @@
   font-weight: 600;
 }
 
-.eventList {
-  display: grid;
-  gap: 14px;
-}
-
-.eventItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 14px 16px;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(44, 110, 111, 0.12);
-  background: #fff;
-}
-
-.eventMeta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+.cardGrid {
+  align-items: start;
 }
 
 @keyframes glowPulse {
@@ -199,8 +180,4 @@
     align-items: flex-start;
   }
 
-  .eventItem {
-    flex-direction: column;
-    align-items: flex-start;
-  }
 }

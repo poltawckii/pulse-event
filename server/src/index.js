@@ -8,6 +8,7 @@ import ratingsRoutes from './routes/ratings.js'
 import recommendationsRoutes from './routes/recommendations.js'
 import kudagoRoutes from './routes/kudago.js'
 import geocodeRoutes from './routes/geocode.js'
+import profileRoutes from './routes/profile.js'
 
 const app = express()
 
@@ -25,6 +26,7 @@ app.use('/api/ratings', ratingsRoutes)
 app.use('/api/recommendations', recommendationsRoutes)
 app.use('/api/kudago', kudagoRoutes)
 app.use('/api/geocode', geocodeRoutes)
+app.use('/api/profile', profileRoutes)
 
 app.listen(config.port, () => {
   console.log(`API listening on port ${config.port}`)

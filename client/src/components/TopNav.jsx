@@ -91,7 +91,7 @@ function TopNav() {
               Выйти
             </button>
           ) : (
-            <NavLink to="/auth" className={styles.authLink}>
+            <NavLink to="/auth?mode=login" className={styles.authLink}>
               Войти
             </NavLink>
           )}

@@ -43,6 +43,7 @@ function Events() {
           url: event.url,
           price: event.price,
           categories: event.categories || [],
+          image: event.image || null,
         }
       : { eventId: event.id }
 
@@ -76,6 +77,7 @@ function Events() {
           price: event.price,
           categories: event.categories || [],
           score,
+          image: event.image || null,
         }
       : { eventId: event.id, score }
 

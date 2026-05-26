@@ -3,10 +3,10 @@
   top: 16px;
   left: 0;
   right: 0;
-  z-index: 10;
+  z-index: 1000;
   display: flex;
   justify-content: center;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .inner {
@@ -19,7 +19,7 @@
   background: rgba(255, 255, 255, 0.94);
   border-radius: 999px;
   box-shadow: var(--shadow-md);
-  pointer-events: all;
+  pointer-events: auto;
   backdrop-filter: blur(8px);
 }
 

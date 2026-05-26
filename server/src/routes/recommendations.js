@@ -5,7 +5,7 @@ import authMiddleware from '../middleware/auth.js'
 const router = Router()
 
 router.get('/', authMiddleware, async (req, res) => {
-  const { lat, lng, radius = '5000', location = 'msk' } = req.query
+  const { lat, lng, radius = '5000', location = 'msk', basis = 'ratings' } = req.query
 
   try {
     const [localRatings, localFavorites, externalRatings, externalFavorites] =
@@ -50,10 +50,18 @@ router.get('/', authMiddleware, async (req, res) => {
       weights.set(slug, (weights.get(slug) || 0) + value)
     }
 
-    localRatings.rows.forEach((row) => addWeight(row.slug, Number(row.rating) * 2))
-    externalRatings.rows.forEach((row) => addWeight(row.slug, Number(row.rating) * 2))
-    localFavorites.rows.forEach((row) => addWeight(row.slug, Number(row.favs)))
-    externalFavorites.rows.forEach((row) => addWeight(row.slug, Number(row.favs)))
+    const useFavorites = basis === 'favorites'
+    const useRatings = basis !== 'favorites'
+
+    if (useRatings) {
+      localRatings.rows.forEach((row) => addWeight(row.slug, Number(row.rating) * 2))
+      externalRatings.rows.forEach((row) => addWeight(row.slug, Number(row.rating) * 2))
+    }
+
+    if (useFavorites) {
+      localFavorites.rows.forEach((row) => addWeight(row.slug, Number(row.favs)))
+      externalFavorites.rows.forEach((row) => addWeight(row.slug, Number(row.favs)))
+    }
 
     let topCategories = [...weights.entries()]
       .sort((a, b) => b[1] - a[1])
@@ -62,13 +70,15 @@ router.get('/', authMiddleware, async (req, res) => {
 
     if (!topCategories.length) {
       const idResult = await pool.query(
-        `SELECT DISTINCT external_id
-         FROM (
-           SELECT external_id FROM ratings_external WHERE user_id = $1
-           UNION
-           SELECT external_id FROM favorites_external WHERE user_id = $1
-         ) AS external_ids
-         LIMIT 20`,
+        useFavorites
+          ? `SELECT DISTINCT external_id
+             FROM favorites_external
+             WHERE user_id = $1
+             LIMIT 20`
+          : `SELECT DISTINCT external_id
+             FROM ratings_external
+             WHERE user_id = $1
+             LIMIT 20`,
         [req.user.id]
       )
 
@@ -137,8 +147,8 @@ router.get('/', authMiddleware, async (req, res) => {
       location,
       page_size: '50',
       categories: topCategories.join(','),
-      fields: 'id,title,dates,place,price,site_url,categories',
-      expand: 'place',
+      fields: 'id,title,dates,place,price,site_url,categories,images',
+      expand: 'place,images',
     })
 
     if (lat && lng) {
@@ -156,10 +166,11 @@ router.get('/', authMiddleware, async (req, res) => {
     }
 
     const payload = await response.json()
-    const excludeIds = new Set([
-      ...externalRatings.rows.map((row) => String(row.external_id)),
-      ...externalFavorites.rows.map((row) => String(row.external_id)),
-    ])
+    const excludeIds = new Set(
+      useFavorites
+        ? externalFavorites.rows.map((row) => String(row.external_id))
+        : externalRatings.rows.map((row) => String(row.external_id))
+    )
 
     const data = (payload?.results || [])
       .filter((event) => !excludeIds.has(String(event.id)))
@@ -172,6 +183,7 @@ router.get('/', authMiddleware, async (req, res) => {
         url: event.site_url,
         categories: event.categories || [],
         place: event.place?.title || null,
+        image: event.images?.[0]?.image || null,
       }))
 
     return res.json({ data })

@@ -57,6 +57,7 @@
   margin: 0;
   font-size: 13px;
   color: var(--ink-500);
+  position: relative;
 }
 
 .footer {

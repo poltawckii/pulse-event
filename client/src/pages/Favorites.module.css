@@ -1,0 +1,42 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.list {
+  align-items: start;
+}
+
+.empty {
+  padding: 20px;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--accent-200);
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--ink-500);
+  text-align: center;
+}
+
+.card {
+  display: grid;
+  gap: 12px;
+}
+
+.cardActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.remove {
+  background: white;
+  border: 1px solid rgba(178, 58, 72, 0.2);
+  color: var(--error-500);
+}
+
+@media (max-width: 720px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

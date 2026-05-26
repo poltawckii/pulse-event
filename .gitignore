@@ -1,6 +1,7 @@
 # Env files (keep examples)
 .env
 .env.*
+.env.prod
 !.env.example
 !.env.prod.example
 

@@ -17,9 +17,13 @@ CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(255) NOT NULL UNIQUE,
   password_hash VARCHAR(255) NOT NULL,
   full_name VARCHAR(200),
+  city VARCHAR(120),
   social_group_id INT REFERENCES social_groups(id),
   created_at TIMESTAMP DEFAULT NOW()
 );
+
+ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS city VARCHAR(120);
 
 CREATE TABLE IF NOT EXISTS events (
   id SERIAL PRIMARY KEY,
@@ -54,6 +58,7 @@ CREATE TABLE IF NOT EXISTS favorites_external (
   url TEXT,
   price VARCHAR(255),
   categories TEXT[],
+  image TEXT,
   created_at TIMESTAMP DEFAULT NOW(),
   PRIMARY KEY (user_id, source, external_id)
 );
@@ -76,6 +81,7 @@ CREATE TABLE IF NOT EXISTS ratings_external (
   url TEXT,
   price VARCHAR(255),
   categories TEXT[],
+  image TEXT,
   created_at TIMESTAMP DEFAULT NOW(),
   PRIMARY KEY (user_id, source, external_id)
 );
@@ -83,8 +89,14 @@ CREATE TABLE IF NOT EXISTS ratings_external (
 ALTER TABLE favorites_external
   ADD COLUMN IF NOT EXISTS categories TEXT[];
 
+ALTER TABLE favorites_external
+  ADD COLUMN IF NOT EXISTS image TEXT;
+
 ALTER TABLE ratings_external
   ADD COLUMN IF NOT EXISTS categories TEXT[];
+
+ALTER TABLE ratings_external
+  ADD COLUMN IF NOT EXISTS image TEXT;
 
 CREATE TABLE IF NOT EXISTS registrations (
   id SERIAL PRIMARY KEY,

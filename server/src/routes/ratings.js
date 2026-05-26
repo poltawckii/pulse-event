@@ -16,7 +16,7 @@ router.get('/', authMiddleware, async (req, res) => {
     )
 
     const externalResult = await pool.query(
-      `SELECT external_id, title, place, url, price, score, source
+      `SELECT external_id, title, place, url, price, score, source, image
        FROM ratings_external
        WHERE user_id = $1
        ORDER BY created_at DESC`,
@@ -39,6 +39,7 @@ router.get('/', authMiddleware, async (req, res) => {
       url: row.url,
       price: row.price,
       score: row.score,
+      image: row.image,
     }))
 
     return res.json({ data: [...external, ...local] })
@@ -49,7 +50,7 @@ router.get('/', authMiddleware, async (req, res) => {
 })
 
 router.post('/', authMiddleware, async (req, res) => {
-  const { eventId, score, source, externalId, title, place, url, price, categories } = req.body
+  const { eventId, score, source, externalId, title, place, url, price, categories, image } = req.body
 
   if (!score) {
     return res.status(400).json({ error: 'Score is required' })
@@ -63,8 +64,8 @@ router.post('/', authMiddleware, async (req, res) => {
     try {
       await pool.query(
         `INSERT INTO ratings_external
-         (user_id, source, external_id, score, title, place, url, price, categories)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+         (user_id, source, external_id, score, title, place, url, price, categories, image)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
          ON CONFLICT (user_id, source, external_id)
          DO UPDATE SET score = EXCLUDED.score`,
         [
@@ -77,6 +78,7 @@ router.post('/', authMiddleware, async (req, res) => {
           url || null,
           price || null,
           Array.isArray(categories) ? categories : null,
+          image || null,
         ]
       )
 
@@ -104,6 +106,33 @@ router.post('/', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('Ratings local error:', error)
     return res.status(500).json({ error: 'Failed to save rating' })
+  }
+})
+
+router.delete('/:eventId', authMiddleware, async (req, res) => {
+  const { source } = req.query
+
+  try {
+    if (source === 'kudago') {
+      await pool.query(
+        `DELETE FROM ratings_external
+         WHERE user_id = $1 AND source = $2 AND external_id = $3`,
+        [req.user.id, source, String(req.params.eventId)]
+      )
+
+      return res.json({ status: 'ok' })
+    }
+
+    await pool.query(
+      `DELETE FROM ratings
+       WHERE user_id = $1 AND event_id = $2`,
+      [req.user.id, req.params.eventId]
+    )
+
+    return res.json({ status: 'ok' })
+  } catch (error) {
+    console.error('Ratings delete error:', error)
+    return res.status(500).json({ error: 'Failed to remove rating' })
   }
 })
 

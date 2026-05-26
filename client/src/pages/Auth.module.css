@@ -1,0 +1,58 @@
+.wrapper {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(220px, 1fr) 2fr;
+  align-items: start;
+}
+
+.panel {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(145deg, rgba(44, 110, 111, 0.12), rgba(243, 240, 234, 0.9));
+  box-shadow: var(--shadow-sm);
+}
+
+.panelHeader h1 {
+  margin: 8px 0 0;
+}
+
+.panelHeader p {
+  margin: 8px 0 0;
+}
+
+.panelMeta {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.panelMeta strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 16px;
+}
+
+.form {
+  display: grid;
+  gap: 18px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.message {
+  margin-top: 14px;
+  color: var(--ink-500);
+}
+
+@media (max-width: 900px) {
+  .wrapper {
+    grid-template-columns: 1fr;
+  }
+}

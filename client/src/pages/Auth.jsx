@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import styles from './Auth.module.css'
 
 function Auth() {
   const [mode, setMode] = useState('login')
@@ -10,6 +12,16 @@ function Auth() {
   })
   const [status, setStatus] = useState('idle')
   const [message, setMessage] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  useEffect(() => {
+    const nextMode = searchParams.get('mode')
+    if (nextMode === 'login' || nextMode === 'register') {
+      setMode(nextMode)
+      setStatus('idle')
+      setMessage('')
+    }
+  }, [searchParams])
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -49,11 +61,24 @@ function Auth() {
         throw new Error(serverMessage || 'Ошибка авторизации')
       }
 
-      localStorage.setItem('auth_token', data.token)
-      localStorage.setItem('auth_user', JSON.stringify(data.user))
-      window.dispatchEvent(new Event('auth-changed'))
-      setStatus('success')
-      setMessage(mode === 'login' ? 'Signed in successfully.' : 'Account created.')
+      if (mode === 'login') {
+        localStorage.setItem('auth_token', data.token)
+        localStorage.setItem('auth_user', JSON.stringify(data.user))
+        window.dispatchEvent(new Event('auth-changed'))
+        setStatus('success')
+        setMessage('Вход выполнен.')
+      } else {
+        setStatus('registered')
+        setMessage('Аккаунт создан. Теперь войдите в систему.')
+        setMode('login')
+        setSearchParams({ mode: 'login' }, { replace: true })
+        setForm((prev) => ({
+          ...prev,
+          password: '',
+          fullName: '',
+          socialGroupId: '',
+        }))
+      }
     } catch (error) {
       setStatus('error')
       setMessage(error.message)
@@ -61,18 +86,38 @@ function Auth() {
   }
 
   const toggleMode = () => {
-    setMode((prev) => (prev === 'login' ? 'register' : 'login'))
+    const nextMode = mode === 'login' ? 'register' : 'login'
+    setMode(nextMode)
+    setSearchParams({ mode: nextMode })
     setMessage('')
   }
 
   return (
     <div className="page">
-      <section className="section">
-        <div className="sectionHeader">
-          <h1>{mode === 'login' ? 'Вход' : 'Регистрация'}</h1>
-          <span className="badge">Доступ по JWT</span>
+      <section className={`section ${styles.wrapper}`}>
+        <div className={styles.panel}>
+          <div className={styles.panelHeader}>
+            <span className="badge">PulseEvent</span>
+            <h1>{mode === 'login' ? 'Вход' : 'Регистрация'}</h1>
+            <p className="muted">
+              {mode === 'login'
+                ? 'Продолжайте планировать культурные выходные.'
+                : 'Создайте аккаунт и получите персональные рекомендации.'}
+            </p>
+          </div>
+          <div className={styles.panelMeta}>
+            <div>
+              <span className="muted">Статус</span>
+              <strong>{status === 'success' ? 'Вход выполнен' : 'Активен'}</strong>
+            </div>
+            <div>
+              <span className="muted">Доступ</span>
+              <strong>JWT</strong>
+            </div>
+          </div>
         </div>
-        <form className="grid two" onSubmit={handleSubmit}>
+
+        <form className={styles.form} onSubmit={handleSubmit}>
           {mode === 'register' && (
             <div>
               <label className="muted" htmlFor="fullName">
@@ -84,7 +129,7 @@ function Auth() {
                 name="fullName"
                 value={form.fullName}
                 onChange={handleChange}
-                placeholder="Poltavskiy V.I."
+                placeholder="Иван Иванов"
               />
             </div>
           )}
@@ -136,7 +181,7 @@ function Auth() {
               </select>
             </div>
           )}
-          <div className="sectionHeader">
+          <div className={styles.actions}>
             <button className="button" type="submit" disabled={status === 'loading'}>
               {status === 'loading'
                 ? 'Подождите...'
@@ -144,12 +189,19 @@ function Auth() {
                 ? 'Войти'
                 : 'Зарегистрироваться'}
             </button>
-            <button className="button secondary" type="button" onClick={toggleMode}>
-              {mode === 'login' ? 'Регистрация' : 'Назад ко входу'}
-            </button>
+            {status !== 'success' && (
+              <button className="button secondary" type="button" onClick={toggleMode}>
+                {mode === 'login' ? 'Регистрация' : 'Назад ко входу'}
+              </button>
+            )}
+            {status === 'success' && (
+              <Link className="button secondary" to="/profile">
+                Перейти в профиль
+              </Link>
+            )}
           </div>
         </form>
-        {message && <p className="muted">{message}</p>}
+        {message && <p className={styles.message}>{message}</p>}
       </section>
     </div>
   )

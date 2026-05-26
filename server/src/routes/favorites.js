@@ -16,7 +16,7 @@ router.get('/', authMiddleware, async (req, res) => {
     )
 
     const externalResult = await pool.query(
-      `SELECT external_id, title, place, url, price, source, created_at
+      `SELECT external_id, title, place, url, price, source, image, created_at
        FROM favorites_external
        WHERE user_id = $1
        ORDER BY created_at DESC`,
@@ -38,6 +38,7 @@ router.get('/', authMiddleware, async (req, res) => {
       place: event.place,
       url: event.url,
       price: event.price,
+      image: event.image,
     }))
 
     return res.json({ data: [...external, ...local] })
@@ -47,7 +48,7 @@ router.get('/', authMiddleware, async (req, res) => {
 })
 
 router.post('/', authMiddleware, async (req, res) => {
-  const { eventId, source, externalId, title, place, url, price, categories } = req.body
+  const { eventId, source, externalId, title, place, url, price, categories, image } = req.body
 
   if (source === 'kudago') {
     if (!externalId || !title) {
@@ -57,8 +58,8 @@ router.post('/', authMiddleware, async (req, res) => {
     try {
       await pool.query(
         `INSERT INTO favorites_external
-         (user_id, source, external_id, title, place, url, price, categories)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         (user_id, source, external_id, title, place, url, price, categories, image)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
          ON CONFLICT DO NOTHING`,
         [
           req.user.id,
@@ -69,6 +70,7 @@ router.post('/', authMiddleware, async (req, res) => {
           url || null,
           price || null,
           Array.isArray(categories) ? categories : null,
+          image || null,
         ]
       )
 

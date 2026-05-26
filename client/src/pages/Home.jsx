@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
-import pickDateLabel from '../utils/formatEventDateLabel.js'
+import EventCard from '../components/EventCard.jsx'
 import styles from './Home.module.css'
 
 const socialGroupMap = {
@@ -47,7 +47,6 @@ const isSameDay = (dateA, dateB) =>
 function Home() {
   const [events, setEvents] = useState([])
   const [eventsStatus, setEventsStatus] = useState('idle')
-  const token = useMemo(() => localStorage.getItem('auth_token'), [])
   const user = useMemo(() => {
     const stored = localStorage.getItem('auth_user')
     return stored ? JSON.parse(stored) : null
@@ -168,25 +167,14 @@ function Home() {
             Смотреть все →
           </Link>
         </div>
-        <div className={styles.eventList}>
+        <div className={`grid three ${styles.cardGrid}`}>
           {eventsStatus === 'loading' && <p className="muted">Загрузка событий...</p>}
           {eventsStatus === 'error' && <p className="muted">Не удалось загрузить события.</p>}
           {eventsStatus === 'ready' && todayEvents.length === 0 && (
             <p className="muted">Сегодня нет явных событий, посмотрите каталог.</p>
           )}
           {todayEvents.map((event) => (
-            <div key={`${event.source}-${event.id}`} className={styles.eventItem}>
-              <div>
-                <h3>{event.title}</h3>
-                <p className="muted">{event.place || 'Городская площадка'}</p>
-              </div>
-              <div className={styles.eventMeta}>
-                <span className="badge">{pickDateLabel(event) || 'Сегодня'}</span>
-                <Link className="button secondary" to={`/events/${event.id}?source=${event.source || 'kudago'}`}>
-                  Открыть
-                </Link>
-              </div>
-            </div>
+            <EventCard key={`${event.source}-${event.id}`} event={event} />
           ))}
         </div>
       </section>
@@ -205,7 +193,7 @@ function Home() {
             Рекомендации →
           </Link>
         </div>
-        <div className={styles.eventList}>
+        <div className={`grid three ${styles.cardGrid}`}>
           {groupProfile && groupEvents.length === 0 && (
             <p className="muted">Пока нет подходящих событий. Проверьте позже.</p>
           )}
@@ -213,18 +201,7 @@ function Home() {
             <p className="muted">Укажите социальную группу в профиле для точной подборки.</p>
           )}
           {groupEvents.map((event) => (
-            <div key={`${event.source}-${event.id}`} className={styles.eventItem}>
-              <div>
-                <h3>{event.title}</h3>
-                <p className="muted">{event.place || 'Городская площадка'}</p>
-              </div>
-              <div className={styles.eventMeta}>
-                <span className="badge">{pickDateLabel(event) || 'Уточняйте даты'}</span>
-                <Link className="button secondary" to={`/events/${event.id}?source=${event.source || 'kudago'}`}>
-                  Открыть
-                </Link>
-              </div>
-            </div>
+            <EventCard key={`${event.source}-${event.id}`} event={event} />
           ))}
         </div>
       </section>

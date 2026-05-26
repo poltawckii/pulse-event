@@ -1,0 +1,58 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.list {
+  align-items: start;
+}
+
+.card {
+  position: relative;
+  display: grid;
+  gap: 12px;
+}
+
+.score {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--sun-400);
+  color: #2b1a04;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+  z-index: 2;
+}
+
+.cardActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.remove {
+  background: white;
+  border: 1px solid rgba(178, 58, 72, 0.2);
+  color: var(--error-500);
+}
+
+.empty {
+  padding: 20px;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--accent-200);
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--ink-500);
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
