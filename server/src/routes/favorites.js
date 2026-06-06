@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import pool from '../db/pool.js'
 import authMiddleware from '../middleware/auth.js'
+import { normalizeImageUrl } from '../utils/kudagoImage.js'
 
 const router = Router()
 
@@ -38,7 +39,7 @@ router.get('/', authMiddleware, async (req, res) => {
       place: event.place,
       url: event.url,
       price: event.price,
-      image: event.image,
+      image: normalizeImageUrl(event.image),
     }))
 
     return res.json({ data: [...external, ...local] })
@@ -48,7 +49,7 @@ router.get('/', authMiddleware, async (req, res) => {
 })
 
 router.post('/', authMiddleware, async (req, res) => {
-  const { eventId, source, externalId, title, place, url, price, categories, image } = req.body
+  const { eventId, source, externalId, title, place, url, price, categories, image, tags } = req.body
 
   if (source === 'kudago') {
     if (!externalId || !title) {
@@ -58,9 +59,9 @@ router.post('/', authMiddleware, async (req, res) => {
     try {
       await pool.query(
         `INSERT INTO favorites_external
-         (user_id, source, external_id, title, place, url, price, categories, image)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-         ON CONFLICT DO NOTHING`,
+         (user_id, source, external_id, title, place, url, price, categories, image, tags)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+         ON CONFLICT (user_id, source, external_id) DO UPDATE SET tags = EXCLUDED.tags`,
         [
           req.user.id,
           source,
@@ -70,7 +71,8 @@ router.post('/', authMiddleware, async (req, res) => {
           url || null,
           price || null,
           Array.isArray(categories) ? categories : null,
-          image || null,
+          normalizeImageUrl(image) || null,
+          Array.isArray(tags) && tags.length ? tags : null,
         ]
       )
 

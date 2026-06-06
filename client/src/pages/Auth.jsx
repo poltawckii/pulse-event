@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import styles from './Auth.module.css'
 
 function Auth() {
@@ -13,6 +13,7 @@ function Auth() {
   const [status, setStatus] = useState('idle')
   const [message, setMessage] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const nextMode = searchParams.get('mode')
@@ -67,17 +68,13 @@ function Auth() {
         window.dispatchEvent(new Event('auth-changed'))
         setStatus('success')
         setMessage('Вход выполнен.')
+        navigate('/')
       } else {
         setStatus('registered')
-        setMessage('Аккаунт создан. Теперь войдите в систему.')
+        setMessage('Аккаунт создан — теперь войдите в систему.')
         setMode('login')
         setSearchParams({ mode: 'login' }, { replace: true })
-        setForm((prev) => ({
-          ...prev,
-          password: '',
-          fullName: '',
-          socialGroupId: '',
-        }))
+        setForm((prev) => ({ ...prev, password: '', fullName: '', socialGroupId: '' }))
       }
     } catch (error) {
       setStatus('error')
@@ -85,124 +82,150 @@ function Auth() {
     }
   }
 
-  const toggleMode = () => {
-    const nextMode = mode === 'login' ? 'register' : 'login'
-    setMode(nextMode)
-    setSearchParams({ mode: nextMode })
+  const switchTo = (next) => {
+    if (next === mode) return
+    setMode(next)
+    setSearchParams({ mode: next })
     setMessage('')
+    setStatus('idle')
   }
 
   return (
-    <div className="page">
-      <section className={`section ${styles.wrapper}`}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className="badge">PulseEvent</span>
-            <h1>{mode === 'login' ? 'Вход' : 'Регистрация'}</h1>
-            <p className="muted">
-              {mode === 'login'
-                ? 'Продолжайте планировать культурные выходные.'
-                : 'Создайте аккаунт и получите персональные рекомендации.'}
-            </p>
-          </div>
-          <div className={styles.panelMeta}>
-            <div>
-              <span className="muted">Статус</span>
-              <strong>{status === 'success' ? 'Вход выполнен' : 'Активен'}</strong>
-            </div>
-            <div>
-              <span className="muted">Доступ</span>
-              <strong>JWT</strong>
-            </div>
-          </div>
+    <div className={styles.page}>
+      <div className={styles.card}>
+
+        {/* Gradient header */}
+        <div className={styles.cardTop}>
+          <div className={styles.cardTopDeco} />
+          <Link to="/" className={styles.brand}>
+            <span className={styles.brandName}>
+              Pulse<span className={styles.brandAccent}>Event</span>
+            </span>
+          </Link>
+          <h1 className={styles.title}>
+            {mode === 'login' ? 'Добро пожаловать' : 'Создать аккаунт'}
+          </h1>
+          <p className={styles.subtitle}>
+            {mode === 'login'
+              ? 'Войдите, чтобы получать персональные рекомендации событий'
+              : 'Присоединяйтесь и откройте мир городских событий'}
+          </p>
         </div>
 
-        <form className={styles.form} onSubmit={handleSubmit}>
-          {mode === 'register' && (
-            <div>
-              <label className="muted" htmlFor="fullName">
-                ФИО
-              </label>
+        {/* Form body */}
+        <div className={styles.cardBody}>
+
+          {/* Tab switcher */}
+          <div className={styles.tabs}>
+            <button
+              className={`${styles.tab} ${mode === 'login' ? styles.tabActive : ''}`}
+              type="button"
+              onClick={() => switchTo('login')}
+            >
+              Войти
+            </button>
+            <button
+              className={`${styles.tab} ${mode === 'register' ? styles.tabActive : ''}`}
+              type="button"
+              onClick={() => switchTo('register')}
+            >
+              Регистрация
+            </button>
+          </div>
+
+          <form className={styles.form} onSubmit={handleSubmit}>
+            {mode === 'register' && (
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="fullName">ФИО</label>
+                <input
+                  className={styles.input}
+                  id="fullName"
+                  name="fullName"
+                  value={form.fullName}
+                  onChange={handleChange}
+                  placeholder="Иван Иванов"
+                  autoComplete="name"
+                />
+              </div>
+            )}
+
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="email">Email</label>
               <input
-                className="input"
-                id="fullName"
-                name="fullName"
-                value={form.fullName}
+                className={styles.input}
+                id="email"
+                name="email"
+                type="email"
+                value={form.email}
                 onChange={handleChange}
-                placeholder="Иван Иванов"
+                placeholder="email@example.com"
+                required
+                autoComplete="email"
               />
             </div>
-          )}
-          <div>
-            <label className="muted" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="input"
-              id="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="email@example.com"
-              required
-            />
-          </div>
-          <div>
-            <label className="muted" htmlFor="password">
-              Пароль
-            </label>
-            <input
-              className="input"
-              id="password"
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          {mode === 'register' && (
-            <div>
-              <label className="muted" htmlFor="socialGroupId">
-                Социальная группа
-              </label>
-              <select
-                className="select"
-                id="socialGroupId"
-                name="socialGroupId"
-                value={form.socialGroupId}
+
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="password">Пароль</label>
+              <input
+                className={styles.input}
+                id="password"
+                name="password"
+                type="password"
+                value={form.password}
                 onChange={handleChange}
-              >
-                <option value="">Не указано</option>
-                <option value="1">Молодежь</option>
-                <option value="2">Пенсионеры</option>
-                <option value="3">Семьи</option>
-                <option value="4">Люди с ОВЗ</option>
-              </select>
+                required
+                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+              />
             </div>
-          )}
-          <div className={styles.actions}>
-            <button className="button" type="submit" disabled={status === 'loading'}>
+
+            {mode === 'register' && (
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="socialGroupId">
+                  Социальная группа
+                  <span className={styles.labelOptional}> — необязательно</span>
+                </label>
+                <select
+                  className={styles.select}
+                  id="socialGroupId"
+                  name="socialGroupId"
+                  value={form.socialGroupId}
+                  onChange={handleChange}
+                >
+                  <option value="">Не указано</option>
+                  <option value="1">Молодежь</option>
+                  <option value="2">Пенсионеры</option>
+                  <option value="3">Семьи</option>
+                  <option value="4">Люди с ОВЗ</option>
+                </select>
+              </div>
+            )}
+
+            {message && (
+              <div className={`${styles.message} ${status === 'error' ? styles.messageError : styles.messageOk}`}>
+                {status === 'error' ? '⚠ ' : '✓ '}{message}
+              </div>
+            )}
+
+            <button
+              className={styles.submitBtn}
+              type="submit"
+              disabled={status === 'loading'}
+            >
               {status === 'loading'
                 ? 'Подождите...'
                 : mode === 'login'
-                ? 'Войти'
-                : 'Зарегистрироваться'}
+                ? 'Войти в аккаунт'
+                : 'Создать аккаунт'}
             </button>
-            {status !== 'success' && (
-              <button className="button secondary" type="button" onClick={toggleMode}>
-                {mode === 'login' ? 'Регистрация' : 'Назад ко входу'}
-              </button>
-            )}
+
             {status === 'success' && (
-              <Link className="button secondary" to="/profile">
-                Перейти в профиль
+              <Link className={styles.profileLink} to="/profile">
+                Перейти в профиль →
               </Link>
             )}
-          </div>
-        </form>
-        {message && <p className={styles.message}>{message}</p>}
-      </section>
+          </form>
+        </div>
+      </div>
     </div>
   )
 }

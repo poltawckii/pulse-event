@@ -26,6 +26,13 @@ const socialGroupMap = {
   },
 }
 
+const quickLinks = [
+  { emoji: '🗺️', title: 'Карта', desc: 'Найти события рядом с вами', to: '/map' },
+  { emoji: '🎭', title: 'Каталог', desc: 'Все события города', to: '/events' },
+  { emoji: '✨', title: 'Рекомендации', desc: 'Персональная подборка', to: '/recommendations' },
+  { emoji: '❤️', title: 'Избранное', desc: 'Сохранённые события', to: '/favorites' },
+]
+
 const normalizeStartDate = (dateInfo) => {
   if (dateInfo?.start_date) {
     const dateTime = new Date(`${dateInfo.start_date}T${dateInfo.start_time || '00:00:00'}`)
@@ -39,18 +46,26 @@ const normalizeStartDate = (dateInfo) => {
   return Number.isNaN(dateTime.getTime()) ? null : dateTime
 }
 
-const isSameDay = (dateA, dateB) =>
-  dateA.getFullYear() === dateB.getFullYear()
-  && dateA.getMonth() === dateB.getMonth()
-  && dateA.getDate() === dateB.getDate()
+function CardSkeletons({ count = 4 }) {
+  return Array.from({ length: count }, (_, i) => (
+    <div key={i} className={styles.skeleton}>
+      <div className={styles.skeletonImg} />
+      <div className={styles.skeletonLine} style={{ width: '80%' }} />
+      <div className={styles.skeletonLine} style={{ width: '55%' }} />
+      <div className={styles.skeletonLine} style={{ width: '65%' }} />
+    </div>
+  ))
+}
 
 function Home() {
   const [events, setEvents] = useState([])
   const [eventsStatus, setEventsStatus] = useState('idle')
+
   const user = useMemo(() => {
     const stored = localStorage.getItem('auth_user')
     return stored ? JSON.parse(stored) : null
   }, [])
+
   const groupProfile = user?.socialGroupId ? socialGroupMap[user.socialGroupId] : null
 
   useEffect(() => {
@@ -59,152 +74,199 @@ function Home() {
       try {
         const response = await fetch('/api/kudago/events?location=msk&pageSize=80')
         const payload = await response.json()
-        if (!response.ok) {
-          throw new Error(payload.error || 'Не удалось загрузить события')
-        }
+        if (!response.ok) throw new Error(payload.error || 'Ошибка загрузки')
         setEvents(payload.data || [])
         setEventsStatus('ready')
-      } catch (error) {
+      } catch {
         setEvents([])
         setEventsStatus('error')
       }
     }
-
     loadEvents()
   }, [])
 
-
-  const todayEvents = useMemo(() => {
-    const now = new Date()
+  const upcomingEvents = useMemo(() => {
+    const now = Date.now()
     return events
-      .filter((event) => {
+      .map((event) => {
         const dateItems = Array.isArray(event.dates) ? event.dates : event.dates ? [event.dates] : []
-        if (dateItems.some((item) => item?.is_continuous || item?.is_endless)) return true
-        const firstDate = dateItems
-          .map((item) => normalizeStartDate(item))
-          .find(Boolean)
-        return firstDate ? isSameDay(firstDate, now) : false
+        const isContinuous = dateItems.some((d) => d?.is_continuous || d?.is_endless)
+        if (isContinuous) return { event, ts: 0 }
+        const first = dateItems.map((d) => normalizeStartDate(d)).find(Boolean)
+        if (!first) return null
+        return { event, ts: first.getTime() }
       })
+      .filter((item) => item !== null && (item.ts === 0 || item.ts >= now - 86400000))
+      .sort((a, b) => a.ts - b.ts)
       .slice(0, 4)
+      .map((item) => item.event)
   }, [events])
 
   const groupEvents = useMemo(() => {
     if (!groupProfile) return []
     return events
       .filter((event) =>
-        event.categories?.some((category) => groupProfile.categories.includes(category))
+        event.categories?.some((cat) => groupProfile.categories.includes(cat))
       )
       .slice(0, 4)
   }, [events, groupProfile])
 
-  const categoryLinks = [
-    {
-      title: 'Карта рядом',
-      description: 'Поиск событий по радиусу и быстрый переход к карточкам.',
-      to: '/map',
-      value: 'Геопоиск',
-    },
-    {
-      title: 'Каталог событий',
-      description: 'Полный список событий города с фильтрами и сортировкой.',
-      to: '/events',
-      value: 'Все события',
-    },
-  ]
-
   return (
     <div className={`page ${styles.page}`}>
-      <section className={`section ${styles.hero}`}>
-        <div className={styles.heroGlow} />
+
+      {/* ── Hero ── */}
+      <section className={styles.hero}>
+        <div className={styles.heroBg}>
+          <div className={styles.heroBgCircle1} />
+          <div className={styles.heroBgCircle2} />
+          <div className={styles.heroBgCircle3} />
+        </div>
         <div className={styles.heroContent}>
-          <span className={styles.kicker}>PulseEvent</span>
-          <h1 className={styles.title}>PulseEvent</h1>
-          <p className={styles.subtitle}>
-            Городские события, собранные в одном месте. Быстрый доступ к избранному,
-            оценкам и подборкам под вашу социальную группу.
+          <span className={styles.kicker}>Городской гид по событиям</span>
+          <h1 className={styles.heroTitle}>
+            Открывайте город<br />вместе с&nbsp;
+            <span className={styles.heroAccent}>PulseEvent</span>
+          </h1>
+          <p className={styles.heroSub}>
+            Концерты, выставки, фестивали и многое другое — собранные в одном месте.
+            Персональные рекомендации, карта рядом, избранное и оценки.
           </p>
           <div className={styles.heroActions}>
-            <Link className="button" to="/events">
-              Перейти к событиям
-            </Link>
-            <Link className="button secondary" to="/map">
-              Открыть карту
-            </Link>
+            <Link className="button" to="/events">Смотреть события</Link>
+            <Link className={`button secondary ${styles.heroSecondary}`} to="/map">Открыть карту</Link>
           </div>
         </div>
-        <div className={styles.heroOrbit} />
+
+        <div className={styles.heroVisual}>
+          <div className={styles.floatCard}>
+            <span className={styles.floatCardEmoji}>🎭</span>
+            <div>
+              <p className={styles.floatCardTitle}>Театр и культура</p>
+              <p className={styles.floatCardSub}>Выставки, спектакли, туры</p>
+            </div>
+          </div>
+          <div className={`${styles.floatCard} ${styles.floatCardAlt}`}>
+            <span className={styles.floatCardEmoji}>🎵</span>
+            <div>
+              <p className={styles.floatCardTitle}>Концерты</p>
+              <p className={styles.floatCardSub}>Живая музыка в городе</p>
+            </div>
+          </div>
+          <div className={`${styles.floatCard} ${styles.floatCardAccent}`}>
+            <span className={styles.floatCardEmoji}>👨‍👩‍👧</span>
+            <div>
+              <p className={styles.floatCardTitle}>Для семьи</p>
+              <p className={styles.floatCardSub}>Праздники, квесты, пикники</p>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section className={`section ${styles.categories}`}>
+      {/* ── Статистика ── */}
+      <section className={styles.stats}>
+        <div className={styles.statItem}>
+          <strong>100+</strong>
+          <span>событий каждый день</span>
+        </div>
+        <div className={styles.statDivider} />
+        <div className={styles.statItem}>
+          <strong>18</strong>
+          <span>категорий</span>
+        </div>
+        <div className={styles.statDivider} />
+        <div className={styles.statItem}>
+          <strong>4</strong>
+          <span>соц. группы</span>
+        </div>
+        <div className={styles.statDivider} />
+        <div className={styles.statItem}>
+          <strong>Москва</strong>
+          <span>и другие города</span>
+        </div>
+      </section>
+
+      {/* ── Быстрый доступ ── */}
+      <section className={`section ${styles.quickSection}`}>
         <div className="sectionHeader">
           <div>
-            <h2>Категории</h2>
-            <p className="muted">Быстрые подборки и переходы в нужные разделы.</p>
+            <h2>Быстрый доступ</h2>
+            <p className="muted">Перейдите в нужный раздел одним кликом.</p>
           </div>
-          {groupProfile && <span className="badge">Соц. группа: {groupProfile.label}</span>}
+          {groupProfile && <span className="badge">Группа: {groupProfile.label}</span>}
         </div>
-        <div className={styles.categoryGrid}>
-          {categoryLinks.map((item) => (
-            <Link key={item.title} to={item.to} className={styles.categoryCard}>
+        <div className={styles.quickGrid}>
+          {quickLinks.map((item) => (
+            <Link key={item.to} to={item.to} className={styles.quickCard}>
+              <span className={styles.quickEmoji}>{item.emoji}</span>
               <div>
-                <h3>{item.title}</h3>
-                <p className={styles.categoryValue}>{item.value}</p>
-                <p className="muted">{item.description}</p>
+                <p className={styles.quickTitle}>{item.title}</p>
+                <p className={styles.quickDesc}>{item.desc}</p>
               </div>
-              <span className={styles.categoryArrow}>→</span>
+              <span className={styles.quickArrow}>→</span>
             </Link>
           ))}
         </div>
       </section>
 
-      <section className={`section ${styles.events}`}>
+      {/* ── Ближайшие события ── */}
+      <section className={`section ${styles.eventsSection}`}>
         <div className={styles.eventsHeader}>
           <div>
-            <h2>Идет сегодня</h2>
-            <p className="muted">События, которые можно посетить уже сегодня.</p>
+            <h2>Ближайшие события</h2>
+            <p className="muted">Актуальные события города, которые скоро начнутся.</p>
           </div>
-          <Link className={styles.inlineLink} to="/events">
-            Смотреть все →
-          </Link>
+          <Link className={styles.seeAll} to="/events">Все события →</Link>
         </div>
         <div className={`grid three ${styles.cardGrid}`}>
-          {eventsStatus === 'loading' && <p className="muted">Загрузка событий...</p>}
+          {eventsStatus === 'loading' && <CardSkeletons count={4} />}
           {eventsStatus === 'error' && <p className="muted">Не удалось загрузить события.</p>}
-          {eventsStatus === 'ready' && todayEvents.length === 0 && (
-            <p className="muted">Сегодня нет явных событий, посмотрите каталог.</p>
+          {eventsStatus === 'ready' && upcomingEvents.length === 0 && (
+            <p className="muted">Нет ближайших событий — загляните в каталог.</p>
           )}
-          {todayEvents.map((event) => (
+          {upcomingEvents.map((event) => (
             <EventCard key={`${event.source}-${event.id}`} event={event} />
           ))}
         </div>
       </section>
 
-      <section className={`section ${styles.events}`}>
+      {/* ── Для вашей группы ── */}
+      <section className={`section ${styles.eventsSection}`}>
         <div className={styles.eventsHeader}>
           <div>
-            <h2>Под вашу соц. группу</h2>
+            <h2>Для вашей группы</h2>
             <p className="muted">
               {groupProfile
                 ? `Подборка для группы «${groupProfile.label}».`
-                : 'Добавьте социальную группу в профиле, чтобы получать подборки.'}
+                : 'Укажите социальную группу в профиле — и мы подберём события именно для вас.'}
             </p>
           </div>
-          <Link className={styles.inlineLink} to="/recommendations">
-            Рекомендации →
-          </Link>
+          <Link className={styles.seeAll} to="/recommendations">Рекомендации →</Link>
         </div>
-        <div className={`grid three ${styles.cardGrid}`}>
-          {groupProfile && groupEvents.length === 0 && (
-            <p className="muted">Пока нет подходящих событий. Проверьте позже.</p>
-          )}
-          {!groupProfile && (
-            <p className="muted">Укажите социальную группу в профиле для точной подборки.</p>
-          )}
-          {groupEvents.map((event) => (
-            <EventCard key={`${event.source}-${event.id}`} event={event} />
-          ))}
-        </div>
+        {!groupProfile ? (
+          <div className={styles.groupCta}>
+            <p>
+              {user
+                ? 'Укажите социальную группу в профиле — и мы подберём события именно для вас.'
+                : 'Войдите в аккаунт, чтобы получать персональные рекомендации событий.'}
+            </p>
+            {user
+              ? <Link className="button" to="/profile">Заполнить профиль</Link>
+              : <Link className="button" to="/auth?mode=login">Войти</Link>
+            }
+          </div>
+        ) : (
+          <div className={`grid three ${styles.cardGrid}`}>
+            {eventsStatus === 'loading' && <CardSkeletons count={4} />}
+            {eventsStatus === 'ready' && groupEvents.length === 0 && (
+              <p className="muted">Пока нет подходящих событий — проверьте позже.</p>
+            )}
+            {groupEvents.map((event) => (
+              <EventCard key={`${event.source}-${event.id}`} event={event} />
+            ))}
+          </div>
+        )}
       </section>
+
     </div>
   )
 }

@@ -9,7 +9,7 @@ export const mockEvents = [
     rating: 4.7,
     location: 'Central embankment, pier 4',
     distance: 1.2,
-    tags: ['outdoor', 'beginner'],
+    tags: ['На улице', 'Для начинающих'],
   },
   {
     id: 'evt-102',
@@ -21,7 +21,7 @@ export const mockEvents = [
     rating: 4.9,
     location: 'City history museum',
     distance: 3.4,
-    tags: ['guided', 'accessible'],
+    tags: ['С гидом', 'Доступная среда'],
   },
   {
     id: 'evt-103',
@@ -33,7 +33,7 @@ export const mockEvents = [
     rating: 4.5,
     location: 'Tech hub, hall B',
     distance: 5.1,
-    tags: ['indoor', 'hands-on'],
+    tags: ['В помещении', 'Практика'],
   },
   {
     id: 'evt-104',
@@ -45,7 +45,7 @@ export const mockEvents = [
     rating: 4.6,
     location: 'Botanical garden',
     distance: 2.7,
-    tags: ['kids', 'outdoor'],
+    tags: ['Для детей', 'На улице'],
   },
   {
     id: 'evt-105',
@@ -57,6 +57,6 @@ export const mockEvents = [
     rating: 4.8,
     location: 'Drama theatre',
     distance: 4.2,
-    tags: ['accessible', 'audio-description'],
+    tags: ['Доступная среда', 'Аудиодескрипция'],
   },
 ]

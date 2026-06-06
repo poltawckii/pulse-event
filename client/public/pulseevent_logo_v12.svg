@@ -1,0 +1,20 @@
+<svg width="100%" viewBox="48 55 478 154" role="img" xmlns="http://www.w3.org/2000/svg" style="">
+  <title style="fill:rgb(0, 0, 0);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">PulseEvent logo</title>
+  <desc style="fill:rgb(0, 0, 0);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">Логотип PulseEvent</desc>
+  <defs>
+    <clipPath id="icon-clip">
+      <circle cx="120" cy="127" r="70"/>
+    </clipPath>
+  </defs>
+
+  <circle cx="120" cy="127" r="72" fill="#1a7a5e" style="fill:rgb(26, 122, 94);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <polyline points="52,127 78,127 91,104 104,150 117,88 130,156 143,106 156,127 188,127" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" clip-path="url(#icon-clip)" style="fill:none;stroke:rgb(255, 255, 255);color:rgb(0, 0, 0);stroke-width:3.5px;stroke-linecap:round;stroke-linejoin:round;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <circle cx="117" cy="88" r="6" fill="#a8ddd0" style="fill:rgb(168, 221, 208);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <text x="216" y="131" font-family="'Helvetica Neue', Arial, sans-serif" font-size="54" font-weight="700" letter-spacing="-2" fill="#1a3a30" style="fill:rgb(26, 58, 48);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Helvetica Neue&quot;, Arial, sans-serif;font-size:54px;font-weight:700;text-anchor:start;dominant-baseline:auto">Pulse<tspan fill="#1a7a5e" style="fill:rgb(26, 122, 94);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Helvetica Neue&quot;, Arial, sans-serif;font-size:54px;font-weight:700;text-anchor:start;dominant-baseline:auto">Event</tspan></text>
+
+  <rect x="216" y="143" width="300" height="1.5" rx="1" fill="#1a7a5e" opacity="0.3" style="fill:rgb(26, 122, 94);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.3;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <text x="351" y="163" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="12.5" font-weight="400" fill="#5bb8a0" letter-spacing="3" style="fill:rgb(91, 184, 160);stroke:none;color:rgb(0, 0, 0);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Helvetica Neue&quot;, Arial, sans-serif;font-size:12.5px;font-weight:400;text-anchor:middle;dominant-baseline:auto">ОЩУТИ РИТМ СОБЫТИЙ</text>
+
+</svg>

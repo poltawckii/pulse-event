@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom'
+import EventCover from './EventCover.jsx'
 import styles from './EventCard.module.css'
 import pickDateLabel from '../utils/formatEventDateLabel.js'
+import formatEventCategory from '../utils/formatEventCategory.js'
 
 function EventCard({ event, onFavorite, onRate }) {
-  const tags = event.tags || event.categories || []
+  const tags = (event.tags || event.categories || []).slice(0, 3)
   const hasRating = typeof event.rating === 'number'
   const dateLabel = pickDateLabel(event)
   const priceLabel = (() => {
@@ -20,27 +22,20 @@ function EventCard({ event, onFavorite, onRate }) {
 
   return (
     <article className={styles.card}>
-      {event.image && (
-        <Link
-          to={`/events/${event.id}?source=${event.source || 'local'}`}
-          className={styles.cover}
-        >
-          <img src={event.image} alt={event.title} loading="lazy" />
-        </Link>
-      )}
+      <EventCover event={event} />
       <header className={styles.header}>
-        <div>
+        <div className={styles.headerText}>
           <h3 className={styles.title}>
             <Link to={`/events/${event.id}?source=${event.source || 'local'}`}>
               {event.title}
             </Link>
           </h3>
-          <p className="muted">{event.place || event.location || 'Городская площадка'}</p>
+          <p className={`muted ${styles.location}`}>{event.place || event.location || 'Городская площадка'}</p>
         </div>
         {hasRating && <span className={styles.rating}>{event.rating.toFixed(1)}</span>}
       </header>
       <div className={styles.meta}>
-        {event.category && <span className="badge">{event.category}</span>}
+        {event.category && <span className="badge">{formatEventCategory(event.category)}</span>}
         {event.distance && <span className="badge">{event.distance} км</span>}
         <span className="badge">{dateLabel || 'Уточняйте даты'}</span>
         <span className="badge">{priceLabel}</span>
@@ -48,10 +43,11 @@ function EventCard({ event, onFavorite, onRate }) {
       {tags.length > 0 && (
         <ul className={styles.tags}>
           {tags.map((tag) => (
-            <li key={tag}>{tag}</li>
+            <li key={tag}>{formatEventCategory(tag)}</li>
           ))}
         </ul>
       )}
+      <div className={styles.spacer} />
       <div className={styles.footer}>
         <Link className="button" to={`/events/${event.id}?source=${event.source || 'local'}`}>
           Открыть

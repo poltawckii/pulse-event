@@ -1,9 +1,54 @@
+.mapLoaderOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.65);
+  pointer-events: none;
+  font-size: 18px;
+  color: var(--ink-700);
+  gap: 18px;
+}
+
+.mapLoaderSpinner {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 4px solid var(--accent-200);
+  border-top: 4px solid var(--accent-600);
+  animation: mapSpin 1s linear infinite;
+}
+
+@keyframes mapSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 .page {
   gap: 24px;
 }
 
+.pageFull {
+  margin: 0;
+  padding: 0;
+}
+
 .panel {
   background: rgba(255, 255, 255, 0.98);
+}
+
+.panelFull {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  z-index: 50;
+  overflow: hidden;
 }
 
 .panelHeader {
@@ -11,6 +56,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+}
+
+.panelHeaderHidden {
+  display: none;
 }
 
 .title {
@@ -21,11 +70,27 @@
 .layout {
   display: grid;
   grid-template-columns: minmax(240px, 300px) minmax(0, 1fr) minmax(260px, 320px);
+  grid-template-areas: "sidebar map details";
   gap: 24px;
   align-items: start;
+  position: relative;
+}
+
+.layoutFull {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "map";
+  grid-template-rows: 1fr;
+  height: 100%;
+}
+
+.layoutWithSidebar {
+  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+  grid-template-areas: "sidebar map";
+  gap: 0;
 }
 
 .sidebar {
+  grid-area: sidebar;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -36,8 +101,253 @@
   box-shadow: var(--shadow-sm);
 }
 
+.sidebarReturnButton {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid rgba(16,20,23,0.08);
+  box-shadow: var(--shadow-sm);
+  color: var(--ink-700);
+  text-decoration: none;
+}
+
+.sidebarReturnButton svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sidebarFull {
+  height: 100%;
+  min-height: 0;
+  border-radius: 0;
+  border-top: none;
+  border-bottom: none;
+  border-left: none;
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.sidebarSearch {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid rgba(44, 110, 111, 0.12);
+  background: linear-gradient(160deg, #fbf7ef 0%, #fff 85%);
+}
+
+.sidebarSearchHeader {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: start;
+}
+
+.sidebarBrand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.logoSmall {
+  width: 260px;
+  max-width: 70%;
+  height: auto;
+  display: block;
+  margin: 0 auto 6px;
+}
+
+@media (max-width: 980px) {
+  .logoSmall {
+    width: 140px;
+    max-width: 50%;
+  }
+}
+
+.sidebarTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 6px;
+  text-align: center;
+}
+
+.statusLine {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.searchRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid rgba(44,110,111,0.08);
+  box-shadow: 0 1px 0 rgba(16,20,23,0.02) inset;
+}
+
+.searchLogoArea {
+  flex: 0 0 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  padding: 0 12px;
+  height: 44px;
+}
+
+.searchInputArea {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  height: 44px;
+}
+
+.searchIcon {
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+
+.searchInputArea :global(.input) {
+  width: 100%;
+  padding-left: 12px;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent;
+  height: 100%;
+  box-sizing: border-box;
+  font-size: 14px;
+  border-radius: 0;
+}
+
+.searchInputArea :global(.input):focus,
+.searchInputArea :global(.input):focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.searchBox:focus-within {
+  border-color: rgba(44,110,111,0.18);
+  box-shadow: 0 2px 8px rgba(44,110,111,0.06);
+}
+
+.filterRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.sidebarEvents {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.eventsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.eventList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.eventListItem {
+  display: grid;
+  gap: 8px;
+  scroll-margin-top: 16px;
+}
+
+.eventItem {
+  width: 100%;
+  text-align: left;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(44, 110, 111, 0.14);
+  background: #fff;
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.eventItem:hover {
+  border-color: var(--accent-400);
+  background: rgba(44, 110, 111, 0.04);
+}
+
+.eventItemActive {
+  border-color: var(--accent-600);
+  background: rgba(44, 110, 111, 0.1);
+  box-shadow: inset 3px 0 0 var(--accent-600);
+}
+
+.eventItemExpanded {
+  display: grid;
+  gap: 0;
+}
+
+.eventItemTitle {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--ink-900);
+}
+
+.eventItemMeta {
+  font-size: 12px;
+  color: var(--ink-500);
+  line-height: 1.35;
+}
+
 .sidebar .button {
   width: 100%;
+}
+
+.searchRow .button {
+  width: auto;
+  white-space: nowrap;
 }
 
 .statusBlock {
@@ -62,18 +372,86 @@
 }
 
 .mapWrap {
+  grid-area: map;
   min-height: 560px;
+  position: relative;
+}
+
+.mapWrapFull {
+  min-height: 100%;
+  height: 100%;
+  width: 100%;
+}
+
+.mapControls {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 4;
+  display: grid;
+  gap: 10px;
+}
+
+.mapControlButton {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(16, 20, 23, 0.12);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--ink-700);
+  text-decoration: none;
+}
+
+.mapControlButton svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mapControlButton:hover {
+  transform: translateY(-1px);
+}
+
+.hidden {
+  display: none;
+}
+
+/* ── Мобильная панель (hidden on desktop) ── */
+.mobileTopBar {
+  display: none;
+}
+
+.mobileEventsFab {
+  display: none;
+}
+
+.mobileEventsSheet {
+  display: none;
 }
 
 .details {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  max-width: 380px;
+  min-width: 280px;
+  z-index: 20;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 16px;
-  border-radius: var(--radius-md);
+  padding: 18px 18px 18px 22px;
+  border-radius: 18px;
   background: linear-gradient(160deg, #ffffff 0%, #f4efe6 90%);
   border: 1px solid rgba(44, 110, 111, 0.12);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
 }
 
 .detailsHeader {
@@ -81,45 +459,538 @@
   gap: 6px;
 }
 
+/* ── Карточка события в сайдбаре (десктоп) ── */
 .detailsCard {
-  display: grid;
-  gap: 12px;
-}
-
-.detailsImage {
-  border-radius: var(--radius-sm);
+  position: relative;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  background: #fff;
-  border: 1px solid rgba(16, 20, 23, 0.08);
+  border-radius: var(--radius-md);
+  background: white;
+  border: 1px solid rgba(44, 110, 111, 0.14);
+  box-shadow: 0 2px 12px rgba(16,20,23,0.07);
 }
 
-.detailsImage img {
+.eventItemExpanded .detailsCard {
+  border-color: rgba(44, 110, 111, 0.25);
+}
+
+.detailsThumb {
   width: 100%;
-  height: 180px;
+  height: 120px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1a4f50, #2c6e6f);
+}
+
+.detailsThumb img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .detailsBody {
-  display: grid;
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+}
+
+.detailsType {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--accent-600);
 }
 
 .detailsMeta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .detailsActions {
   display: flex;
 }
 
+.detailsActions :global(.button) {
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  padding: 8px 14px;
+  font-size: 13px;
+}
+
+.closeButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.9);
+  box-shadow: 0 1px 4px rgba(16,20,23,0.18);
+  color: var(--ink-700);
+  font-size: 18px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+  z-index: 2;
+}
+
+/* ══════════════════════════════════════
+   Мобильная версия ≤980px
+══════════════════════════════════════ */
 @media (max-width: 980px) {
   .layout {
     grid-template-columns: 1fr;
+    grid-template-areas: "map";
+  }
+
+  .sidebar {
+    display: none;
   }
 
   .mapWrap {
-    min-height: 420px;
+    min-height: 100%;
+  }
+
+  .mapControls {
+    display: none;
+  }
+
+  /* ── Верхняя панель ── */
+  .mobileTopBar {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    padding: 10px;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-sm);
+    z-index: 5;
+    gap: 0;
+  }
+
+  .mobileSearchRow {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .mobileBackBtn {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    border: 1.5px solid rgba(44, 110, 111, 0.22);
+    background: white;
+    display: grid;
+    place-items: center;
+    color: var(--ink-700);
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .mobileBackBtn:active {
+    background: rgba(44, 110, 111, 0.07);
+  }
+
+  .mobileBackBtn svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .mobileSearchRow :global(.input) {
+    font-size: 14px;
+    padding: 9px 12px;
+    border-radius: var(--radius-sm);
+  }
+
+  .mobileSearchRow :global(.button) {
+    white-space: nowrap;
+    padding: 9px 14px;
+    font-size: 14px;
+  }
+
+  /* Кнопка фильтров */
+  .mobileFilterToggle {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    border: 1.5px solid rgba(44, 110, 111, 0.22);
+    background: white;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    color: var(--ink-700);
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+
+  .mobileFilterToggle svg {
+    width: 17px;
+    height: 17px;
+    fill: currentColor;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+
+  .mobileFilterToggleOpen {
+    background: var(--accent-600);
+    border-color: var(--accent-600);
+    color: white;
+  }
+
+  /* Панель фильтров */
+  .mobileFiltersPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(44, 110, 111, 0.12);
+  }
+
+  .mobileFiltersPanel :global(.button) {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    padding: 9px 14px;
+    font-size: 14px;
+  }
+
+  .mobileRadiusRow {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mobileRadiusRow :global(.muted) {
+    font-size: 13px;
+  }
+
+  .radiusValue {
+    color: var(--accent-600);
+  }
+
+  .mobileRange {
+    width: 100%;
+    accent-color: var(--accent-600);
+    cursor: pointer;
+  }
+
+  .mobileSelectsRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .mobileSelectsRow :global(.select) {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .mobileStatusNote {
+    font-size: 12px;
+    margin: 0;
+    text-align: center;
+  }
+
+  /* ── FAB — количество событий ── */
+  .mobileEventsFab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: absolute;
+    bottom: 20px;
+    left: 16px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: none;
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: var(--shadow-md);
+    color: var(--ink-900);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    z-index: 4;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .mobileEventsFab svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    fill: var(--accent-600);
+    stroke: none;
+  }
+
+  .mobileEventsFabOpen {
+    background: var(--accent-600);
+    color: white;
+  }
+
+  .mobileEventsFabOpen svg {
+    fill: white;
+  }
+
+  /* ── Шторка со списком событий ── */
+  .mobileEventsSheet {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 56vh;
+    z-index: 18;
+    background: white;
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -4px 28px rgba(16, 20, 23, 0.14);
+    overflow: hidden;
+  }
+
+  .mobileEventsSheetHandle {
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(16, 20, 23, 0.14);
+    margin: 10px auto 0;
+    flex-shrink: 0;
+  }
+
+  .mobileEventsSheetHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px 10px;
+    font-weight: 700;
+    font-size: 16px;
+    border-bottom: 1px solid rgba(44, 110, 111, 0.1);
+    flex-shrink: 0;
+  }
+
+  .mobileEventsSheetHeader .closeButton {
+    position: static;
+    box-shadow: none;
+    background: rgba(0, 0, 0, 0.07);
+    top: auto;
+    right: auto;
+    width: 28px;
+    height: 28px;
+  }
+
+  .mobileEventsBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--accent-200);
+    color: var(--ink-700);
+    font-size: 12px;
+    font-weight: 600;
+    vertical-align: middle;
+  }
+
+  .mobileEventsStatus {
+    font-size: 14px;
+    margin: 14px 16px;
+  }
+
+  .mobileEventsList {
+    list-style: none;
+    margin: 0;
+    padding: 8px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mobileEventsItem {
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(44, 110, 111, 0.12);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    transition: background 0.12s;
+  }
+
+  .mobileEventsItem:active {
+    background: rgba(44, 110, 111, 0.07);
+  }
+
+  .mobileEventsItemTitle {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink-900);
+    line-height: 1.35;
+  }
+
+  .mobileEventsItemMeta {
+    font-size: 12px;
+    color: var(--ink-500);
+    line-height: 1.35;
+  }
+
+  /* ── Карточка события (полный редизайн на мобилке) ── */
+  .details {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    background: white;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -6px 36px rgba(16, 20, 23, 0.18);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 68vh;
+    padding: 0;
+  }
+
+  /* Hero-секция */
+  .detailsHero {
+    position: relative;
+    height: 175px;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .detailsHeroImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .detailsHeroPlaceholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a4f50 0%, #2c6e6f 55%, #3b8b8c 100%);
+  }
+
+  .detailsHeroGrad {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(10, 18, 20, 0.6) 0%,
+      rgba(10, 18, 20, 0.1) 55%,
+      transparent 100%
+    );
+  }
+
+  .detailsHeroCat {
+    position: absolute;
+    bottom: 14px;
+    left: 16px;
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    padding: 4px 11px;
+    border-radius: 999px;
+  }
+
+  .detailsCloseBtn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.32);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    line-height: 1;
+    transition: background 0.15s;
+  }
+
+  .detailsCloseBtn:active {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  /* Контент под героем */
+  .detailsContent {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .detailsTitle {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--ink-900);
+  }
+
+  .detailsPlace {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ink-500);
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+    line-height: 1.4;
+  }
+
+  .detailsPills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .detailsContent :global(.button) {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    padding: 11px;
+    margin-top: 2px;
   }
 }

@@ -25,6 +25,9 @@ CREATE TABLE IF NOT EXISTS users (
 ALTER TABLE users
   ADD COLUMN IF NOT EXISTS city VARCHAR(120);
 
+ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS bio TEXT;
+
 CREATE TABLE IF NOT EXISTS events (
   id SERIAL PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
@@ -92,11 +95,17 @@ ALTER TABLE favorites_external
 ALTER TABLE favorites_external
   ADD COLUMN IF NOT EXISTS image TEXT;
 
+ALTER TABLE favorites_external
+  ADD COLUMN IF NOT EXISTS tags TEXT[];
+
 ALTER TABLE ratings_external
   ADD COLUMN IF NOT EXISTS categories TEXT[];
 
 ALTER TABLE ratings_external
   ADD COLUMN IF NOT EXISTS image TEXT;
+
+ALTER TABLE ratings_external
+  ADD COLUMN IF NOT EXISTS tags TEXT[];
 
 CREATE TABLE IF NOT EXISTS registrations (
   id SERIAL PRIMARY KEY,

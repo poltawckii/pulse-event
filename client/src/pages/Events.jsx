@@ -3,10 +3,21 @@ import FilterBar from '../components/FilterBar.jsx'
 import EventCard from '../components/EventCard.jsx'
 import { showToast } from '../utils/toast.js'
 
+// Категории KudaGo, типичные для каждой социальной группы
+const GROUP_CATEGORIES = {
+  seniors:  ['concert', 'theater', 'exhibition', 'culture', 'music', 'tour', 'holiday'],
+  families: ['kids', 'entertainment', 'quest', 'recreation', 'festival', 'cinema'],
+  youth:    ['party', 'festival', 'sport', 'entertainment', 'standup', 'quest', 'music', 'concert'],
+  disabled: ['exhibition', 'theater', 'concert', 'education', 'culture', 'tour'],
+}
+
 function Events() {
   const [events, setEvents] = useState([])
   const [status, setStatus] = useState('idle')
   const [sortKey, setSortKey] = useState('date-asc')
+  const [search, setSearch] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('all')
+  const [groupFilter, setGroupFilter] = useState('all')
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -44,6 +55,7 @@ function Events() {
           price: event.price,
           categories: event.categories || [],
           image: event.image || null,
+          tags: event.tags || [],
         }
       : { eventId: event.id }
 
@@ -78,6 +90,7 @@ function Events() {
           categories: event.categories || [],
           score,
           image: event.image || null,
+          tags: event.tags || [],
         }
       : { eventId: event.id, score }
 
@@ -96,7 +109,7 @@ function Events() {
     )
   }
 
-  const sortedEvents = useMemo(() => {
+  const filteredAndSorted = useMemo(() => {
     const getEventStart = (event) => {
       const start = event?.dates?.[0]?.start
       if (typeof start === 'number') return start
@@ -113,23 +126,58 @@ function Events() {
       return Number.MAX_SAFE_INTEGER
     }
 
+    // 1. Сортировка
     const sortable = [...events]
     switch (sortKey) {
       case 'date-desc':
-        return sortable.sort((a, b) => getEventStart(b) - getEventStart(a))
+        sortable.sort((a, b) => getEventStart(b) - getEventStart(a))
+        break
       case 'price-asc':
-        return sortable.sort((a, b) => parsePrice(a.price) - parsePrice(b.price))
+        sortable.sort((a, b) => parsePrice(a.price) - parsePrice(b.price))
+        break
       case 'price-desc':
-        return sortable.sort((a, b) => parsePrice(b.price) - parsePrice(a.price))
+        sortable.sort((a, b) => parsePrice(b.price) - parsePrice(a.price))
+        break
       case 'title-asc':
-        return sortable.sort((a, b) => (a.title || '').localeCompare(b.title || ''))
+        sortable.sort((a, b) => (a.title || '').localeCompare(b.title || ''))
+        break
       case 'title-desc':
-        return sortable.sort((a, b) => (b.title || '').localeCompare(a.title || ''))
-      case 'date-asc':
+        sortable.sort((a, b) => (b.title || '').localeCompare(a.title || ''))
+        break
       default:
-        return sortable.sort((a, b) => getEventStart(a) - getEventStart(b))
+        sortable.sort((a, b) => getEventStart(a) - getEventStart(b))
     }
-  }, [events, sortKey])
+
+    // 2. Поиск по названию и месту
+    const q = search.trim().toLowerCase()
+    const afterSearch = q
+      ? sortable.filter(
+          (e) =>
+            e.title?.toLowerCase().includes(q) ||
+            e.place?.toLowerCase().includes(q)
+        )
+      : sortable
+
+    // 3. Фильтр по категории
+    const afterCategory =
+      categoryFilter === 'all'
+        ? afterSearch
+        : afterSearch.filter((e) =>
+            Array.isArray(e.categories) && e.categories.includes(categoryFilter)
+          )
+
+    // 4. Фильтр по социальной группе
+    const groupCats = GROUP_CATEGORIES[groupFilter]
+    const afterGroup =
+      !groupCats
+        ? afterCategory
+        : afterCategory.filter((e) =>
+            Array.isArray(e.categories) &&
+            e.categories.some((c) => groupCats.includes(c))
+          )
+
+    return afterGroup
+  }, [events, sortKey, search, categoryFilter, groupFilter])
 
   return (
     <div className="page">
@@ -137,20 +185,25 @@ function Events() {
         <div className="sectionHeader">
           <h1>Каталог событий</h1>
           <span className="badge">
-            {status === 'ready' ? `${sortedEvents.length} событий` : 'Загрузка...'}
+            {status === 'ready' ? `${filteredAndSorted.length} событий` : 'Загрузка...'}
           </span>
         </div>
-        <FilterBar />
+        <FilterBar
+          search={search}
+          onSearch={setSearch}
+          category={categoryFilter}
+          onCategory={setCategoryFilter}
+          group={groupFilter}
+          onGroup={setGroupFilter}
+        />
         <div className="sectionHeader">
           <div>
-            <label className="muted" htmlFor="sort">
-              Сортировка
-            </label>
+            <label className="muted" htmlFor="sort">Сортировка</label>
             <select
               className="select"
               id="sort"
               value={sortKey}
-              onChange={(event) => setSortKey(event.target.value)}
+              onChange={(e) => setSortKey(e.target.value)}
             >
               <option value="date-asc">По дате (ближайшие)</option>
               <option value="date-desc">По дате (дальние)</option>
@@ -164,16 +217,27 @@ function Events() {
       </section>
 
       <section className="section">
-        <div className="grid three">
-          {sortedEvents.map((event) => (
-            <EventCard
-              key={`${event.source}-${event.id}`}
-              event={event}
-              onFavorite={sendFavorite}
-              onRate={sendRating}
-            />
-          ))}
-        </div>
+        {status === 'loading' && (
+          <p className="muted">Загрузка событий...</p>
+        )}
+        {status === 'error' && (
+          <p className="muted">Не удалось загрузить события.</p>
+        )}
+        {status === 'ready' && filteredAndSorted.length === 0 && (
+          <p className="muted">Нет событий, подходящих под фильтры.</p>
+        )}
+        {status === 'ready' && filteredAndSorted.length > 0 && (
+          <div className="grid three">
+            {filteredAndSorted.map((event) => (
+              <EventCard
+                key={`${event.source}-${event.id}`}
+                event={event}
+                onFavorite={sendFavorite}
+                onRate={sendRating}
+              />
+            ))}
+          </div>
+        )}
       </section>
     </div>
   )

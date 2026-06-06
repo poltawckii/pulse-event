@@ -7,7 +7,7 @@ const router = Router()
 router.get('/', authMiddleware, async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT id, email, full_name, city, social_group_id
+      `SELECT id, email, full_name, city, bio, social_group_id, created_at
        FROM users
        WHERE id = $1`,
       [req.user.id]
@@ -25,7 +25,9 @@ router.get('/', authMiddleware, async (req, res) => {
         email: user.email,
         fullName: user.full_name,
         city: user.city,
+        bio: user.bio,
         socialGroupId: user.social_group_id,
+        createdAt: user.created_at,
       },
     })
   } catch (error) {
@@ -35,7 +37,7 @@ router.get('/', authMiddleware, async (req, res) => {
 })
 
 router.put('/', authMiddleware, async (req, res) => {
-  const { fullName, socialGroupId, city } = req.body
+  const { fullName, socialGroupId, city, bio } = req.body
 
   try {
     let resolvedGroupId = null
@@ -58,10 +60,11 @@ router.put('/', authMiddleware, async (req, res) => {
       `UPDATE users
        SET full_name = $1,
            city = $2,
-           social_group_id = $3
-       WHERE id = $4
-       RETURNING id, email, full_name, city, social_group_id`,
-      [fullName || null, city || null, resolvedGroupId, req.user.id]
+           social_group_id = $3,
+           bio = $4
+       WHERE id = $5
+       RETURNING id, email, full_name, city, bio, social_group_id, created_at`,
+      [fullName || null, city || null, resolvedGroupId, bio || null, req.user.id]
     )
 
     const user = result.rows[0]
@@ -72,7 +75,9 @@ router.put('/', authMiddleware, async (req, res) => {
         email: user.email,
         fullName: user.full_name,
         city: user.city,
+        bio: user.bio,
         socialGroupId: user.social_group_id,
+        createdAt: user.created_at,
       },
     })
   } catch (error) {

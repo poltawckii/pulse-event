@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import pool from '../db/pool.js'
 import authMiddleware from '../middleware/auth.js'
+import { normalizeImageUrl } from '../utils/kudagoImage.js'
 
 const router = Router()
 
@@ -39,7 +40,7 @@ router.get('/', authMiddleware, async (req, res) => {
       url: row.url,
       price: row.price,
       score: row.score,
-      image: row.image,
+      image: normalizeImageUrl(row.image),
     }))
 
     return res.json({ data: [...external, ...local] })
@@ -50,7 +51,7 @@ router.get('/', authMiddleware, async (req, res) => {
 })
 
 router.post('/', authMiddleware, async (req, res) => {
-  const { eventId, score, source, externalId, title, place, url, price, categories, image } = req.body
+  const { eventId, score, source, externalId, title, place, url, price, categories, image, tags } = req.body
 
   if (!score) {
     return res.status(400).json({ error: 'Score is required' })
@@ -64,10 +65,10 @@ router.post('/', authMiddleware, async (req, res) => {
     try {
       await pool.query(
         `INSERT INTO ratings_external
-         (user_id, source, external_id, score, title, place, url, price, categories, image)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+         (user_id, source, external_id, score, title, place, url, price, categories, image, tags)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
          ON CONFLICT (user_id, source, external_id)
-         DO UPDATE SET score = EXCLUDED.score`,
+         DO UPDATE SET score = EXCLUDED.score, tags = EXCLUDED.tags`,
         [
           req.user.id,
           source,
@@ -78,7 +79,8 @@ router.post('/', authMiddleware, async (req, res) => {
           url || null,
           price || null,
           Array.isArray(categories) ? categories : null,
-          image || null,
+          normalizeImageUrl(image) || null,
+          Array.isArray(tags) && tags.length ? tags : null,
         ]
       )
 

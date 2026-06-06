@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { pickEventImage } from '../utils/kudagoImage.js'
 
 const router = Router()
 const eventsCache = new Map()
@@ -29,7 +30,7 @@ router.get('/events', async (req, res) => {
     location,
     page_size: pageSize,
     actual_since: String(nowMskSeconds),
-    fields: 'id,title,dates,place,price,site_url,categories,images',
+    fields: 'id,title,dates,place,price,site_url,categories,tags,images',
     expand: 'place,images',
   })
 
@@ -77,14 +78,11 @@ router.get('/events', async (req, res) => {
           categories: event.categories || [],
           place: event.place?.title || null,
           coords: coords ? [coords.lat, coords.lon] : null,
-          image: event.images?.[0]?.image || null,
+          image: pickEventImage(event),
+          tags: event.tags || [],
         }
       })
     )
-
-    data.slice(0, 5).forEach((event) => {
-      console.log('KudaGo event sample:', event)
-    })
 
     eventsCache.set(cacheKey, { data, timestamp: Date.now() })
     return res.json({ data })
@@ -99,7 +97,7 @@ router.get('/events/:id', async (req, res) => {
 
   const params = new URLSearchParams({
     lang,
-    fields: 'id,title,dates,place,price,site_url,categories,description,images',
+    fields: 'id,title,dates,place,price,site_url,categories,tags,description,images',
     expand: 'place,dates,images',
     text_format: 'plain',
   })
@@ -129,6 +127,8 @@ router.get('/events/:id', async (req, res) => {
         coords: coords ? [coords.lat, coords.lon] : null,
         description: event.description || null,
         images: event.images || [],
+        image: pickEventImage(event),
+        tags: event.tags || [],
       },
     })
   } catch (error) {

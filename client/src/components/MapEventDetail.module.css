@@ -1,0 +1,60 @@
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.closeButton {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: white;
+  box-shadow: var(--shadow-sm);
+  color: var(--ink-700);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.extra {
+  display: grid;
+  gap: 12px;
+  padding: 0 4px 4px;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.facts strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.descriptionTitle {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+.description p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-700);
+  white-space: pre-wrap;
+}
+
+.description {
+  max-height: 220px;
+  overflow-y: auto;
+  padding-right: 4px;
+}

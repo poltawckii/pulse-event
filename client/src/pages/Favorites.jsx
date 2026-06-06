@@ -1,6 +1,97 @@
 import { useEffect, useState } from 'react'
-import EventCard from '../components/EventCard.jsx'
+import { Link } from 'react-router-dom'
+import pickDateLabel from '../utils/formatEventDateLabel.js'
+import formatEventCategory from '../utils/formatEventCategory.js'
+import pickEventImage from '../utils/pickEventImage.js'
 import styles from './Favorites.module.css'
+
+function formatPrice(price) {
+  if (price === 0 || price === '0') return 'Бесплатно'
+  if (typeof price === 'number') return `${price} руб.`
+  if (typeof price === 'string' && price.trim().length > 0) {
+    const trimmed = price.trim()
+    if (trimmed.length <= 40) return trimmed
+    return `${trimmed.slice(0, 37).trimEnd()}...`
+  }
+  return 'Уточняйте'
+}
+
+function FavoriteItem({ event, onRemove }) {
+  const image = pickEventImage(event)
+  const dateLabel = pickDateLabel(event)
+  const priceLabel = formatPrice(event.price)
+  const categories = event.categories || (event.category ? [event.category] : [])
+  const isFree = priceLabel === 'Бесплатно'
+
+  return (
+    <article className={styles.item}>
+      <Link
+        className={styles.thumb}
+        to={`/events/${event.id}?source=${event.source || 'local'}`}
+        tabIndex={-1}
+        aria-hidden="true"
+      >
+        {image
+          ? <img src={image} alt="" />
+          : <div className={styles.thumbPlaceholder}>{(event.title || '?')[0]}</div>
+        }
+      </Link>
+
+      <div className={styles.body}>
+        <div className={styles.bodyTop}>
+          <div className={styles.titleRow}>
+            <h3 className={styles.title}>
+              <Link to={`/events/${event.id}?source=${event.source || 'local'}`}>
+                {event.title}
+              </Link>
+            </h3>
+            {categories.length > 0 && (
+              <ul className={styles.cats}>
+                {categories.slice(0, 2).map((cat) => (
+                  <li key={cat} className={styles.catBadge}>
+                    {formatEventCategory(cat)}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {(event.place || event.location) && (
+            <p className={styles.place}>
+              {event.place || event.location}
+            </p>
+          )}
+        </div>
+
+        <div className={styles.bodyBottom}>
+          <div className={styles.meta}>
+            {dateLabel && <span className={styles.metaItem}>📅 {dateLabel}</span>}
+            <span className={`${styles.metaItem} ${isFree ? styles.free : ''}`}>
+              💰 {priceLabel}
+            </span>
+          </div>
+
+          <div className={styles.actions}>
+            <Link
+              className={`button ${styles.openBtn}`}
+              to={`/events/${event.id}?source=${event.source || 'local'}`}
+            >
+              Открыть
+            </Link>
+            <button
+              className={styles.removeBtn}
+              type="button"
+              onClick={() => onRemove(event)}
+              aria-label="Удалить из избранного"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
+  )
+}
 
 function Favorites() {
   const [items, setItems] = useState([])
@@ -12,10 +103,7 @@ function Favorites() {
 
     const response = await fetch(
       `/api/favorites/${event.id}?source=${encodeURIComponent(event.source || 'local')}`,
-      {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      }
+      { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } }
     )
 
     if (response.ok) {
@@ -54,36 +142,35 @@ function Favorites() {
           <h1>Избранное</h1>
           <p className="muted">Подборка событий, которые вы сохранили для себя.</p>
         </div>
-        <span className="badge">
-          {status === 'ready' ? `${items.length} сохранено` : 'Сохранено'}
-        </span>
+        {status === 'ready' && (
+          <span className="badge">{items.length} сохранено</span>
+        )}
       </section>
 
       <section className="section">
-        <div className={`grid three ${styles.list}`}>
-          {status === 'unauthorized' && (
-            <div className={styles.empty}>Войдите, чтобы видеть избранное.</div>
-          )}
-          {status === 'loading' && <div className={styles.empty}>Загрузка избранного...</div>}
-          {status === 'error' && <div className={styles.empty}>Не удалось загрузить избранное.</div>}
-          {status === 'ready' && items.length === 0 && (
-            <div className={styles.empty}>Здесь появятся события, которые вы сохраните.</div>
-          )}
-          {items.map((event) => (
-            <div key={`${event.source}-${event.id}`} className={styles.card}>
-              <EventCard event={event} />
-              <div className={styles.cardActions}>
-                <button
-                  className={`button secondary ${styles.remove}`}
-                  type="button"
-                  onClick={() => handleRemove(event)}
-                >
-                  Удалить
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+        {status === 'unauthorized' && (
+          <div className={styles.empty}>Войдите, чтобы видеть избранное.</div>
+        )}
+        {status === 'loading' && (
+          <div className={styles.empty}>Загрузка избранного...</div>
+        )}
+        {status === 'error' && (
+          <div className={styles.empty}>Не удалось загрузить избранное.</div>
+        )}
+        {status === 'ready' && items.length === 0 && (
+          <div className={styles.empty}>
+            Здесь появятся события, которые вы сохраните.
+          </div>
+        )}
+        {status === 'ready' && items.length > 0 && (
+          <ul className={styles.list}>
+            {items.map((event) => (
+              <li key={`${event.source}-${event.id}`}>
+                <FavoriteItem event={event} onRemove={handleRemove} />
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   )

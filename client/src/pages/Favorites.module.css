@@ -5,37 +5,210 @@
   gap: 16px;
 }
 
-.list {
-  align-items: start;
-}
-
 .empty {
-  padding: 20px;
+  padding: 32px 20px;
   border-radius: var(--radius-md);
   border: 1px dashed var(--accent-200);
-  background: rgba(255, 255, 255, 0.8);
   color: var(--ink-500);
   text-align: center;
 }
 
-.card {
-  display: grid;
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
-.cardActions {
+/* ── Карточка-строка ── */
+.item {
   display: flex;
-  justify-content: flex-end;
+  gap: 16px;
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
 }
 
-.remove {
-  background: white;
-  border: 1px solid rgba(178, 58, 72, 0.2);
+.item:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* ── Превью ── */
+.thumb {
+  flex-shrink: 0;
+  width: 120px;
+  display: block;
+  background: linear-gradient(145deg, rgba(44, 110, 111, 0.12), rgba(242, 180, 94, 0.2));
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.thumbPlaceholder {
+  width: 100%;
+  height: 100%;
+  min-height: 110px;
+  display: grid;
+  place-items: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--accent-500);
+  opacity: 0.5;
+}
+
+/* ── Тело карточки ── */
+.body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px 16px 14px 0;
+  gap: 10px;
+}
+
+.bodyTop {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.title a {
+  color: var(--ink-900);
+}
+
+.title a:hover {
+  color: var(--accent-600);
+}
+
+.cats {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.catBadge {
+  padding: 3px 8px;
+  background: var(--accent-200);
+  color: var(--ink-700);
+  border-radius: 999px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.place {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Нижняя часть ── */
+.bodyBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.metaItem {
+  font-size: 13px;
+  color: var(--ink-500);
+}
+
+.free {
+  color: var(--accent-600);
+  font-weight: 600;
+}
+
+/* ── Действия ── */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.openBtn {
+  padding: 7px 16px;
+  font-size: 13px;
+}
+
+.removeBtn {
+  border: none;
+  cursor: pointer;
+  background: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  color: var(--ink-500);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.removeBtn:hover {
+  background: rgba(178, 58, 72, 0.08);
   color: var(--error-500);
 }
 
+/* ── Адаптив ── */
 @media (max-width: 720px) {
   .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .thumb {
+    width: 90px;
+  }
+
+  .titleRow {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .bodyBottom {
     flex-direction: column;
     align-items: flex-start;
   }

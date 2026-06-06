@@ -1,124 +1,218 @@
 .page {
-  gap: 28px;
+  gap: 20px;
 }
 
+/* ── Шапка ── */
 .hero {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 24px;
-  align-items: center;
-  background: linear-gradient(135deg, rgba(59, 139, 140, 0.12), rgba(243, 240, 234, 0.7));
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  background: linear-gradient(135deg, rgba(59, 139, 140, 0.1), rgba(243, 240, 234, 0.6));
 }
 
+/* ── Аватар ── */
 .avatar {
   position: relative;
-  width: 72px;
-  height: 72px;
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
   border-radius: 50%;
   background: var(--accent-600);
-  color: white;
-  display: grid;
-  place-items: center;
-  font-size: 28px;
-  font-weight: 700;
-  box-shadow: var(--shadow-sm);
   overflow: hidden;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  outline: 3px solid white;
 }
 
 .avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-.avatar span {
-  display: inline-block;
-}
-
-.avatarUpload {
+.avatarInitial {
   position: absolute;
-  inset: auto 50% -12px auto;
-  transform: translateX(50%);
-  background: white;
-  border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 11px;
-  color: var(--ink-700);
-  box-shadow: var(--shadow-sm);
-  cursor: pointer;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-size: 38px;
+  font-weight: 700;
 }
 
-.avatarUpload input {
+.avatarOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.avatar:hover .avatarOverlay,
+.avatar:focus .avatarOverlay {
+  opacity: 1;
+}
+
+.avatarOverlayIcon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.avatarOverlayText {
+  font-size: 11px;
+  color: white;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.avatarInput {
   position: absolute;
   inset: 0;
   opacity: 0;
-  cursor: pointer;
+  pointer-events: none;
 }
 
-.heroContent {
-  display: grid;
-  gap: 12px;
-}
-
-.title {
-  margin: 0;
-}
-
-.badges {
+/* ── Информация рядом с аватаром ── */
+.heroInfo {
+  flex: 1;
+  min-width: 0;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 8px;
 }
 
-.stats {
+.heroName {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+}
+
+.heroEmail {
+  margin: 0;
+  font-size: 14px;
+}
+
+.heroBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.heroBio {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--ink-700);
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+/* ── Статистика ── */
+.statsSection {
   display: grid;
-  gap: 10px;
-  min-width: 140px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
 }
 
 .statCard {
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 4px;
-  padding: 10px 12px;
+  padding: 18px 12px;
   background: white;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
+  text-align: center;
 }
 
+.statCardAccent {
+  background: linear-gradient(135deg, var(--accent-600), var(--accent-500));
+}
+
+.statCardAccent .statValue,
+.statCardAccent .statLabel {
+  color: white;
+}
+
+.statValue {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink-900);
+}
+
+.statLabel {
+  font-size: 12px;
+  color: var(--ink-500);
+  letter-spacing: 0.2px;
+}
+
+/* ── Форма ── */
 .formSection h2 {
   margin: 0;
 }
 
 .formGrid {
   display: grid;
-  gap: 18px;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-
-.actions {
-  display: flex;
-  justify-content: flex-end;
+  gap: 16px;
   margin-top: 18px;
 }
 
-.notice {
-  margin-top: 12px;
-  color: var(--ink-500);
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.error {
-  margin-top: 12px;
-  color: var(--error-500);
+.field label {
+  font-size: 13px;
 }
 
-@media (max-width: 900px) {
+.fieldFull {
+  grid-column: 1 / -1;
+}
+
+.bio {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+/* ── Адаптив ── */
+@media (max-width: 600px) {
   .hero {
-    grid-template-columns: 1fr;
-    text-align: left;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 
-  .stats {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    min-width: 0;
+  .heroBadges {
+    justify-content: center;
+  }
+
+  .statsSection {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .formActions {
+    justify-content: stretch;
+  }
+
+  .formActions .button {
+    width: 100%;
   }
 }

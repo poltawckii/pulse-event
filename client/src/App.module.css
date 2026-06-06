@@ -6,16 +6,29 @@
     radial-gradient(circle at 80% 10%, rgba(242, 180, 94, 0.15), transparent 45%);
 }
 
+.appShellFull {
+  height: 100vh;
+  overflow: hidden;
+}
+
 .main {
   width: min(1200px, 92vw);
-  margin: 110px auto 64px;
+  margin: 88px auto 48px;
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
+.mainFull {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  margin: 0;
+  gap: 0;
+}
+
 @media (max-width: 768px) {
   .main {
-    margin-top: 92px;
+    margin-top: 0;
   }
 }

@@ -1,0 +1,11 @@
+<svg viewBox="48 55 144 144" xmlns="http://www.w3.org/2000/svg" role="img">
+  <title>PulseEvent</title>
+  <defs>
+    <clipPath id="icon-clip">
+      <circle cx="120" cy="127" r="70"/>
+    </clipPath>
+  </defs>
+  <circle cx="120" cy="127" r="72" fill="#1a7a5e"/>
+  <polyline points="52,127 78,127 91,104 104,150 117,88 130,156 143,106 156,127 188,127" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" clip-path="url(#icon-clip)"/>
+  <circle cx="117" cy="88" r="6" fill="#a8ddd0"/>
+</svg>
