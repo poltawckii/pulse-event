@@ -194,6 +194,14 @@
   text-align: center;
 }
 
+.vpnNote {
+  margin: 0;
+  font-size: 11px;
+  color: var(--ink-400, #9aa5b1);
+  line-height: 1.4;
+  text-align: center;
+}
+
 .searchRow {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

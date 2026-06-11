@@ -128,30 +128,53 @@ function MapPage() {
   }, [isNarrow])
 
   const requestLocation = useCallback(() => {
-    if (!navigator.geolocation) {
-      setLocationStatus('unavailable')
+    if (!window.isSecureContext) {
+      setLocationStatus('insecure')
       return
     }
 
     setLocationStatus('requesting')
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setCenter([position.coords.latitude, position.coords.longitude])
-        setLocationStatus('granted')
-      },
-      (error) => {
-        if (error.code === 1) {
-          setLocationStatus('denied')
-        } else {
-          setLocationStatus('error')
-        }
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000,
+
+    // Use Yandex geolocation API (VPN-immune: uses Wi-Fi networks database)
+    const tryYandex = () => {
+      if (window.ymaps && window.ymaps.geolocation) {
+        return window.ymaps.geolocation.get({ provider: 'auto', mapStateAutoApply: false })
+          .then((result) => {
+            const obj = result.geoObjects.get(0)
+            if (obj) {
+              const coords = obj.geometry.getCoordinates()
+              setCenter(coords)
+              setLocationStatus('granted')
+              return true
+            }
+            return false
+          })
+          .catch(() => false)
       }
-    )
+      return Promise.resolve(false)
+    }
+
+    // Fallback: browser geolocation with high accuracy (GPS/Wi-Fi scan via OS)
+    const tryBrowser = () => {
+      if (!navigator.geolocation) {
+        setLocationStatus('unavailable')
+        return
+      }
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setCenter([position.coords.latitude, position.coords.longitude])
+          setLocationStatus('granted')
+        },
+        (error) => {
+          if (error.code === 1) setLocationStatus('denied')
+          else if (error.code === 3) setLocationStatus('timeout')
+          else setLocationStatus('error')
+        },
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
+      )
+    }
+
+    tryYandex().then((ok) => { if (!ok) tryBrowser() })
   }, [])
 
   useEffect(() => {
@@ -252,8 +275,11 @@ function MapPage() {
     if (eventsStatus === 'loading') return 'Загрузка событий...'
     if (eventsStatus === 'error') return 'Не удалось загрузить события'
     if (geocodeStatus === 'error') return 'Адрес не найден, попробуйте еще раз'
-    if (locationStatus === 'denied') return 'Доступ к геолокации запрещен'
+    if (locationStatus === 'insecure') return 'Геолокация работает только по HTTPS'
+    if (locationStatus === 'denied') return 'Доступ к геолокации запрещён'
     if (locationStatus === 'unavailable') return 'Геолокация недоступна'
+    if (locationStatus === 'timeout') return 'Не удалось определить местоположение'
+    if (locationStatus === 'error') return 'Ошибка геолокации'
     if (locationStatus === 'requesting') return 'Определяем местоположение...'
     if (locationStatus === 'granted') return 'Показываем события рядом'
     return 'Укажите радиус и включите геолокацию'
@@ -353,6 +379,7 @@ function MapPage() {
               <button className="button secondary" type="button" onClick={requestLocation}>
                 {locationStatus === 'requesting' ? 'Определяем...' : 'Моё местоположение'}
               </button>
+              <p className={styles.vpnNote}>VPN может влиять на точность определения местоположения</p>
 
               <div className={styles.fieldGroup}>
                 <label htmlFor="radius" className="muted">
@@ -545,6 +572,7 @@ function MapPage() {
                   <button className="button secondary" type="button" onClick={requestLocation}>
                     {locationStatus === 'requesting' ? 'Определяем...' : '📍 Моё местоположение'}
                   </button>
+                  <p className={styles.vpnNote}>VPN может влиять на точность определения местоположения</p>
                   <div className={styles.mobileRadiusRow}>
                     <span className="muted">
                       Радиус: <strong className={styles.radiusValue}>{radiusKm} км</strong>
@@ -582,8 +610,17 @@ function MapPage() {
                   {geocodeStatus === 'error' && (
                     <p className={`muted ${styles.mobileStatusNote}`}>Адрес не найден</p>
                   )}
+                  {locationStatus === 'insecure' && (
+                    <p className={`muted ${styles.mobileStatusNote}`}>Нужен HTTPS для геолокации</p>
+                  )}
                   {locationStatus === 'denied' && (
-                    <p className={`muted ${styles.mobileStatusNote}`}>Геолокация запрещена</p>
+                    <p className={`muted ${styles.mobileStatusNote}`}>Разрешите доступ к геолокации в браузере</p>
+                  )}
+                  {locationStatus === 'timeout' && (
+                    <p className={`muted ${styles.mobileStatusNote}`}>Не удалось определить местоположение — попробуйте ещё раз</p>
+                  )}
+                  {locationStatus === 'error' && (
+                    <p className={`muted ${styles.mobileStatusNote}`}>Ошибка геолокации</p>
                   )}
                 </div>
               )}
